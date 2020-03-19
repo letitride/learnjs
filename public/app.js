@@ -5,6 +5,10 @@ learnjs.template = function(name){
   return $('.templates .' + name).clone();
 }
 
+learnjs.landingView = function(){
+  return learnjs.template('landing-view');
+}
+
 learnjs.buildCorrectFlash = function(problemNum){
   var correctFlash = learnjs.template('correct-flash');
   var link = correctFlash.find('a');
@@ -38,6 +42,7 @@ learnjs.problemView = function(data){
     }else{
       learnjs.flashElement( resultFlash, 'Incorrect!');
     }
+    //ページリロードの防止
     return false;
   }
   view.find('.check-btn').click(checkAnswerClick);
@@ -49,7 +54,9 @@ learnjs.problemView = function(data){
 //url hashによるrouting
 learnjs.showView = function(hash){
   var routes = {
-    '#problem' : learnjs.problemView
+    '#problem' : learnjs.problemView,
+    '#': learnjs.landingView,
+    '' : learnjs.landingView,
   };
   var hashParts = hash.split('-');
   var viewFn = routes[hashParts[0]];
