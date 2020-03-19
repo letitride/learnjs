@@ -39,4 +39,20 @@ describe('LearnJS', function(){
       expect(view.find('[data-name="code"]').text()).toEqual('function problem(){ return __; }');
     });
   });
+  describe('answer section', function(){
+    it('can check a correct answer by hitting a button', function(){
+      var view = learnjs.problemView('1');
+      view.find('.answer').val('true');
+      view.find('.check-btn').click();
+      expect(view.find('.result span').text()).toEqual('Correct!');
+    });
+    it('shows next the problem link when exists hash number', function(){
+      var view = learnjs.buildCorrectFlash('1');
+      expect(view.find('a').text()).toEqual("Next Problem");
+    });
+    it('shows finish message when over hash number', function(){
+      var view = learnjs.buildCorrectFlash('40');
+      expect(view.find('a').text()).toEqual("You're Finished!");
+    });
+  });
 });
