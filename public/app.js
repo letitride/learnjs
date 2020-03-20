@@ -106,3 +106,7 @@ learnjs.appOnReady = function(){
   };
   learnjs.showView( window.location.hash );
 }
+
+function googleSignIn() {
+  console.log(arguments);
+}
