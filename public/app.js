@@ -57,6 +57,12 @@ learnjs.problemView = function(data){
   var resultFlash = view.find('.result');
   var answer = view.find('.answer');
 
+  learnjs.fetchAnswer(problemNumber).then(function(data){
+    if(data.Item){
+      answer.val(data.Item.answer);
+    }
+  });
+
   if(problemNumber < learnjs.problems.length){
     var buttonItem = learnjs.template('skip-btn');
     buttonItem.find('a').attr('href', '#problem-' + (problemNumber + 1));
@@ -123,7 +129,6 @@ learnjs.profileView = function(){
 }
 
 learnjs.addProfileLink = function(profile){
-  console.log("abc");
   var link = learnjs.template('profile-link');
   link.find('a').text(profile.email);
   $('.signin-bar').prepend(link);
@@ -145,7 +150,6 @@ learnjs.sendDbRequest = function(req, retry){
     }
   });
   req.on('success', function(resp){
-    console.log("success");
     promise.resolve(resp.data);
   });
   req.send();
@@ -165,6 +169,22 @@ learnjs.saveAnswer = function(problemId, answer){
     };
     return learnjs.sendDbRequest(db.put(item), function(){
       return learnjs.saveAnswer(problemId, answer);
+    });
+  });
+}
+
+learnjs.fetchAnswer = function(problemId){
+  return learnjs.identity.then(function(identity){
+    var db = new AWS.DynamoDB.DocumentClient();
+    var item = {
+      TableName: 'learnjs',
+      Key: {
+        userId: identity.id,
+        problemId: problemId
+      }
+    };
+    return learnjs.sendDbRequest(db.get(item),function(){
+      return learnjs.fetchAnswer(problemId);
     });
   });
 }
