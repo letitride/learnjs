@@ -84,11 +84,29 @@ learnjs.problemView = function(data){
     });
   }
   function checkAnswer(){
+    var def = $.Deferred();
     var test = problemData.code.replace('__', answer.val()) + '; problem();';
-    return eval(test);
+    var worker = new Worker('worker.js');
+    worker.onmessage = function(e){
+      if(e.data){
+        def.resolve(e.data);
+      }else{
+        def.reject();
+      }
+    }
+    worker.postMessage(test);
+    return def;
   }
 
   function checkAnswerClick(){
+    checkAnswer().done(function(){
+      var flashContent = learnjs.buildCorrectFlash(problemNumber);
+      learnjs.flashElement( resultFlash, flashContent);
+      learnjs.saveAnswer(problemNumber, answer.val());
+    }).fail(function(){
+      learnjs.flashElement( resultFlash, 'Incorrect!');
+    });
+    /*
     if(checkAnswer()){
       var flashContent = learnjs.buildCorrectFlash(problemNumber);
       learnjs.flashElement( resultFlash, flashContent);
@@ -96,6 +114,7 @@ learnjs.problemView = function(data){
     }else{
       learnjs.flashElement( resultFlash, 'Incorrect!');
     }
+    */
     //ページリロードの防止
     return false;
   }
